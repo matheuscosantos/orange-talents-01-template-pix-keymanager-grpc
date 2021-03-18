@@ -27,7 +27,6 @@ fun RegistraChavePixRequest.toModel() : NovaChavePix {
         tipoDeConta = when (tipoDeConta) {
             UNKNOWN_TIPO_CONTA -> null
             else -> TipoDeConta.valueOf(tipoDeConta.name)
-            else -> TipoDeConta.valueOf(tipoDeConta.name) // 1
         }
     )
 }
