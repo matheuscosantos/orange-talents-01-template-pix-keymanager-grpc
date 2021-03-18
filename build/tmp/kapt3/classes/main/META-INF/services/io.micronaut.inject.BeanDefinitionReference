@@ -1,0 +1,13 @@
+br.com.mcos.pix.registra.$ValidPixKeyValidatorDefinitionClass
+br.com.mcos.pix.registra.$RegistraChaveEndpointDefinitionClass
+br.com.mcos.pix.registra.$$NovaChavePixServiceDefinition$InterceptedDefinitionClass
+br.com.mcos.shared.grpc.handlers.$DataIntegrityExceptionHandlerDefinitionClass
+br.com.mcos.shared.grpc.$ExceptionHandlerInterceptorDefinitionClass
+br.com.mcos.shared.grpc.handlers.$ConstraintViolationExceptionHandlerDefinitionClass
+br.com.mcos.shared.grpc.handlers.$ChavePixExistenteExceptionHandlerDefinitionClass
+br.com.mcos.integration.$ContasDeClientesNoItauClient$InterceptedDefinitionClass
+br.com.mcos.pix.registra.$$RegistraChaveEndpointDefinition$InterceptedDefinitionClass
+br.com.mcos.shared.grpc.handlers.$ChavePixNaoEncontradaExceptionHandlerDefinitionClass
+br.com.mcos.shared.grpc.$ExceptionHandlerResolverDefinitionClass
+br.com.mcos.pix.registra.$NovaChavePixServiceDefinitionClass
+br.com.mcos.pix.$ChavePixRepository$InterceptedDefinitionClass
