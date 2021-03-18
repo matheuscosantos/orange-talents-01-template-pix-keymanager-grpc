@@ -15,6 +15,7 @@ import br.com.mcos.pix.TipoDeConta
  * Caso o tipoDeChave for UNKNOWN_TIPO_CHAVE deve-se atribuir null,
  * Caso contrário atríbui-se o nome de tipoDeChave
  */
+
 fun RegistraChavePixRequest.toModel() : NovaChavePix {
     return NovaChavePix( // 1
         clienteId = clienteId,
@@ -26,6 +27,7 @@ fun RegistraChavePixRequest.toModel() : NovaChavePix {
         tipoDeConta = when (tipoDeConta) {
             UNKNOWN_TIPO_CONTA -> null
             else -> TipoDeConta.valueOf(tipoDeConta.name)
+            else -> TipoDeConta.valueOf(tipoDeConta.name) // 1
         }
     )
 }
