@@ -57,7 +57,3 @@ message RemoveChavePixResponse {
   string clienteId = 1;
   string pixId = 2;
 }
-
-
-
-
