@@ -3,7 +3,7 @@ package br.com.mcos.pix.registra
 import br.com.mcos.pix.ChavePix
 import br.com.mcos.pix.ContaAssociada
 import br.com.mcos.pix.TipoDeChave
-import br.com.mcos.TipoDeConta
+import br.com.mcos.pix.TipoDeConta
 import br.com.mcos.shared.validation.ValidUUID
 import io.micronaut.core.annotation.Introspected
 import java.util.*

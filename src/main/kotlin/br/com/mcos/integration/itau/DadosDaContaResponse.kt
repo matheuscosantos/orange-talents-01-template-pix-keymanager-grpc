@@ -1,4 +1,4 @@
-package br.com.mcos.integration
+package br.com.mcos.integration.itau
 
 import br.com.mcos.pix.ContaAssociada
 

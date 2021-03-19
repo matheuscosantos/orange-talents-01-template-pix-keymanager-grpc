@@ -1,9 +1,12 @@
 package br.com.mcos.pix.registra
 
+import br.com.mcos.integration.bcb.BancoCentralClient
+import br.com.mcos.integration.bcb.CreatePixKeyRequest
 import br.com.mcos.pix.ChavePix
 import br.com.mcos.pix.ChavePixExistenteException
 import br.com.mcos.pix.ChavePixRepository
-import br.com.mcos.integration.ContasDeClientesNoItauClient
+import br.com.mcos.integration.itau.ContasDeClientesNoItauClient
+import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -13,8 +16,10 @@ import javax.validation.Valid
 
 @Validated
 @Singleton
-class NovaChavePixService(@Inject val repository: ChavePixRepository,
-                          @Inject val itauClient: ContasDeClientesNoItauClient,
+class NovaChavePixService(
+    @Inject val repository: ChavePixRepository,
+    @Inject val itauClient: ContasDeClientesNoItauClient,
+    @Inject val bcbClient: BancoCentralClient
 ) {
 
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
@@ -42,6 +47,24 @@ class NovaChavePixService(@Inject val repository: ChavePixRepository,
         val chave = novaChave.toModel(conta)
 
 //        Salva e retorna a chavePix
-        return repository.save(chave)
+        repository.save(chave)
+
+
+//      ************* Registrando a chave Pix no BCB *************
+        val bcbRequest = CreatePixKeyRequest
+            .of(chave)
+            .also {
+                LOGGER.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
+            }
+
+//        Acessa a API do Banco Central do Brasil
+        val bcbResponse = bcbClient.create(bcbRequest)
+        if (bcbResponse.status != HttpStatus.CREATED)
+            throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB).")
+
+//        Atualiza a chave pix com a vinda do Banco Central do Brasil
+        chave.atualiza(bcbResponse.body()!!.key)
+
+        return chave
     }
 }
