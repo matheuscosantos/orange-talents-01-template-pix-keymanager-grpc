@@ -1,15 +1,14 @@
 package br.com.mcos.integration.bcb
 
+import br.com.mcos.Instituicoes
 import br.com.mcos.pix.ChavePix
 import br.com.mcos.pix.ContaAssociada
 import br.com.mcos.pix.TipoDeChave
 import br.com.mcos.pix.TipoDeConta
+import br.com.mcos.pix.carrega.ChavePixInfo
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Delete
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.http.client.annotation.Client
 import java.time.LocalDateTime
 
@@ -28,6 +27,10 @@ interface BancoCentralClient {
         consumes = [MediaType.APPLICATION_XML]
     )
     fun delete(@PathVariable key: String, @Body request: DeletePixKeyRequest): HttpResponse<DeletePixKeyResponse>
+
+    @Get("/api/v1/pix/keys/{key}",
+        consumes = [MediaType.APPLICATION_XML])
+    fun findByKey(@PathVariable key: String): HttpResponse<PixKeyDetailsResponse>
 
 }
 
@@ -140,3 +143,48 @@ data class DeletePixKeyResponse(
     val participant: String,
     val deletedAt: LocalDateTime
 )
+
+data class PixKeyDetailsResponse (
+    val keyType: PixKeyType,
+    val key: String,
+    val bankAccount: BankAccount,
+    val owner: Owner,
+    val createdAt: LocalDateTime
+) {
+
+    fun toModel(): ChavePixInfo {
+        return ChavePixInfo(
+            tipo = keyType.domainType!!,
+            chave = this.key,
+            tipoDeConta = when (this.bankAccount.accountType) {
+                BankAccount.AccountType.CACC -> TipoDeConta.CONTA_CORRENTE
+                BankAccount.AccountType.SVGS -> TipoDeConta.CONTA_POUPANCA
+            },
+            conta = ContaAssociada(
+                instituicao = Instituicoes.nome(bankAccount.participant),
+                nomeDoTitular = owner.name,
+                cpfDoTitular = owner.taxIdNumber,
+                agencia = bankAccount.branch,
+                numeroDaConta = bankAccount.accountNumber
+            )
+        )
+    }
+}
+
+enum class PixKeyType(val domainType: TipoDeChave?) {
+
+    CPF(TipoDeChave.CPF),
+    CNPJ(null),
+    PHONE(TipoDeChave.CELULAR),
+    EMAIL(TipoDeChave.EMAIL),
+    RANDOM(TipoDeChave.ALEATORIA);
+
+    companion object {
+
+        private val mapping = PixKeyType.values().associateBy(PixKeyType::domainType)
+
+        fun by(domainType: TipoDeChave): PixKeyType {
+            return  mapping[domainType] ?: throw IllegalArgumentException("PixKeyType invalid or not found for $domainType")
+        }
+    }
+}
